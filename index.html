@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BENJAMIN — Futuristic Web3 Portfolio</title>
+  
+  <!-- High-End Professional Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    /* VARIABLES & THEME SETUP */
+    :root {
+      --bg: #080808;
+      --primary: #A855F7;
+      --primary-dark: #6D28D9;
+      --cyber-green: #00E5A8;
+      --white: #FFFFFF;
+      --light-gray: #E5E5E5;
+      --muted-gray: #A3A3A3;
+      --glass-bg: rgba(13, 13, 13, 0.85);
+      --glass-border: rgba(168, 85, 247, 0.2);
+      --glass-hover-border: rgba(168, 85, 247, 0.45);
+      
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--white);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e1e1e;
+      border-radius: 4px;
+      border: 2px solid var(--bg);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+
+    /* INTERACTIVE CANVAS BACKGROUND FOR MULTI-LAYER ECOSYSTEM */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: auto; /* Required to let node interactions track mouse coordinate calculations precisely */
+    }
+
+    .mouse-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.07) 0%, rgba(0, 229, 168, 0.01) 65%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+      z-index: 2;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+    @media (min-width: 1024px) {
+      .mouse-glow {
+        display: block;
+      }
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 3;
+      pointer-events: none; /* Allows click events to fall through to the interactive canvas background elements underneath */
+    }
+    
+    /* Re-enable pointer events for actual clickable items */
+    .navbar, .hero-section, .terminal-section, .marquee-container, #about, #contributions, #contact, footer, a, button {
+      pointer-events: auto;
+    }
+
+    /* FLOATING NAVIGATION BAR */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      background: rgba(8, 8, 8, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+      z-index: 100;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .navbar.scrolled {
+      height: 75px;
+      border-bottom-color: rgba(168, 85, 247, 0.25);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .nav-logo span {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--white);
+      transition: color 0.3s ease;
+    }
+    .nav-logo:hover span {
+      color: var(--primary);
+    }
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--cyber-green);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--cyber-green);
+      animation: pulse 2s infinite;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: var(--muted-gray);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      padding: 10px 0;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nav-link:hover {
+      color: var(--white);
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+    .nav-link.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      flex-direction: column;
+      gap: 6px;
+      width: 30px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background-color: var(--white);
+      transition: all 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 90px;
+        left: 0;
+        width: 100%;
+        background: rgba(8, 8, 8, 0.98);
+        backdrop-filter: blur(25px);
+        flex-direction: column;
+        padding: 40px 0;
+        border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+        gap: 24px;
+      }
+      .nav-links.open {
+        display: flex;
+      }
+      .nav-toggle {
+        display: flex;
+      }
+      .nav-toggle.open span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      .nav-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .nav-toggle.open span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+    }
+
+    /* GLOBAL SECTIONS */
+    .section-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 120px 24px;
+    }
+
+    /* HERO SECTION */
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 140px;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 80px;
+      align-items: center;
+      width: 100%;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      padding: 8px 20px;
+      border-radius: 50px;
+      width: fit-content;
+    }
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--cyber-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--cyber-green);
+      animation: pulse 2.5s infinite;
+    }
+    .hero-badge-text {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      color: var(--cyber-green);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 8vw, 7.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: -3px;
+      position: relative;
+      animation: glitch-split 7s infinite ease-in-out;
+    }
+    .hero-title span {
+      color: var(--white);
+      text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+    }
+    .hero-tagline {
+      font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+      color: var(--light-gray);
+      line-height: 1.6;
+      font-weight: 300;
+      max-w-2xl;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* PREMIUM ACTION BUTTONS */
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 40px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-decoration: none;
+      text-transform: uppercase;
+      border-radius: 8px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 40px rgba(168, 85, 247, 0.7);
+    }
+    .btn-secondary {
+      background: rgba(8, 8, 8, 0.8);
+      color: var(--white);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+    }
+
+    /* HERO PORTRAIT FRAME */
+    .hero-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .portrait-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 1 / 1;
+      border-radius: 24px;
+      padding: 14px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(0, 229, 168, 0.05));
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
+      animation: float-slow 7s ease-in-out infinite;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .portrait-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 24px;
+      padding: 2px;
+      background: linear-gradient(135deg, var(--primary), transparent, var(--cyber-green));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.6;
+      transition: opacity 0.5s ease;
+    }
+    .portrait-wrapper:hover {
+      transform: scale(1.03) rotate(0.5deg);
+      box-shadow: 0 0 70px rgba(168, 85, 247, 0.45);
+    }
+    .portrait-wrapper:hover::before {
+      opacity: 1;
+    }
+    .portrait-container {
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background-color: #0b0b0b;
+      position: relative;
+    }
+    .portrait-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(115%) brightness(90%);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .portrait-wrapper:hover .portrait-image {
+      filter: grayscale(0%) contrast(100%) brightness(105%);
+    }
+    .portrait-hud {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      color: var(--cyber-green);
+      background: rgba(8, 8, 8, 0.9);
+      backdrop-filter: blur(6px);
+      padding: 6px 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 229, 168, 0.3);
+    }
+
+    /* Cybermatic Accent Corners */
+    .cyber-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--cyber-green);
+      border-style: solid;
+      pointer-events: none;
+    }
+    .corner-tl { top: 0; left: 0; border-width: 3px 0 0 3px; }
+    .corner-tr { top: 0; right: 0; border-width: 3px 3px 0 0; border-color: var(--primary); }
+    .corner-bl { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-color: var(--primary); }
+    .corner-br { bottom: 0; right: 0; border-width: 0 3px 3px 0; }
+
+    @media (max-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 70px;
+        text-align: center;
+      }
+      .hero-left {
+        align-items: center;
+      }
+      .hero-tagline {
+        max-w-xl;
+      }
+    }
+
+    /* HIGH-END INTERACTIVE STATISTICS GRID */
+    .stats-section {
+      width: 100%;
+      margin-top: 40px;
+      padding-bottom: 20px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      width: 100%;
+    }
+    .stat-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 30px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--glass-hover-border);
+      box-shadow: 0 20px 45px rgba(168, 85, 247, 0.15);
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--cyber-green));
+      opacity: 0.7;
+    }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 5vw, 4.5rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+    }
+    .stat-label {
+      font-size: 1rem;
+      color: var(--light-gray);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    .stat-subtext {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--cyber-green);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    /* SYSTEM CONSOLE TERMINAL SECTION */
+    .terminal-section {
+      background: rgba(9, 9, 9, 0.55);
+      border-top: 1px solid rgba(168, 85, 247, 0.12);
+      border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+    }
+    .section-header {
+      margin-bottom: 50px;
+    }
+    .section-pretitle {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 4px;
+      color: var(--cyber-green);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: block;
+      font-weight: 600;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      text-transform: uppercase;
+    }
+
+    /* TERMINAL BUG FIX: FIXED CONTAINER HEIGHT */
+    .terminal-window {
+      width: 100%;
+      height: 440px; /* Precise Stable Height */
+      background: rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(168, 85, 247, 0.18);
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(168, 85, 247, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    }
+    .terminal-window:hover {
+      border-color: rgba(168, 85, 247, 0.4);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 50px rgba(168, 85, 247, 0.15);
+    }
+    .terminal-header {
+      background: rgba(8, 8, 8, 0.95);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+      flex-shrink: 0; /* Guard against shrinking */
+    }
+    .terminal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .term-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .term-close { background-color: #EF4444; }
+    .term-min { background-color: #F59E0B; }
+    .term-max { background-color: #10B981; }
+
+    .terminal-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .terminal-clock {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      letter-spacing: 1.5px;
+    }
+
+    /* INTERNAL STABLE SCROLL SCROLLER */
+    .terminal-body {
+      flex-grow: 1;
+      padding: 26px 30px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .terminal-body::-webkit-scrollbar {
+      width: 5px;
+    }
+    .terminal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: rgba(168, 85, 247, 0.35);
+      border-radius: 10px;
+    }
+
+    .term-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: terminal-line-reveal 0.4s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .term-prompt {
+      color: var(--cyber-green);
+      user-select: none;
+    }
+    .term-label {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    .term-val {
+      color: var(--white);
+    }
+    .term-status {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 1px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid currentColor;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .status-active { color: var(--cyber-green); }
+    .status-verified { color: #3B82F6; }
+    .status-stable { color: #A855F7; }
+
+    .console-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background-color: var(--cyber-green);
+      animation: blink 1s infinite steps(2, start);
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+
+    /* INFINITE MARQUEE WITH NO SCROLL JUMPING */
+    .marquee-container {
+      width: 100vw;
+      overflow: hidden;
+      background-color: #000000;
+      border-top: 1px solid rgba(168, 85, 247, 0.12);
+      border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+      padding: 36px 0;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      display: flex;
+      user-select: none;
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marquee-infinite 32s linear infinite;
+    }
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 70px;
+      padding-right: 70px;
+    }
+    .marquee-text {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: rgba(255, 255, 255, 0.95);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .marquee-dot {
+      width: 12px;
+      height: 12px;
+      background-color: var(--primary);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--primary);
+    }
+
+    /* ABOUT SECTION */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: stretch;
+    }
+    .about-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 50px;
+      position: relative;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .about-card:hover {
+      border-color: var(--glass-hover-border);
+      box-shadow: 0 20px 50px rgba(168, 85, 247, 0.15);
+      transform: translateY(-5px);
+    }
+    .about-p {
+      font-size: 1.2rem;
+      color: var(--light-gray);
+      line-height: 1.8;
+      margin-bottom: 30px;
+      font-weight: 300;
+    }
+    .profile-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .feature-item {
+      padding: 24px;
+      border-radius: 14px;
+      background: rgba(10, 10, 10, 0.65);
+      border: 1px solid rgba(168, 85, 247, 0.1);
+      transition: all 0.3s ease;
+    }
+    .feature-item:hover {
+      border-color: rgba(168, 85, 247, 0.3);
+      background: rgba(10, 10, 10, 0.85);
+    }
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--white);
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 0.9rem;
+      color: var(--muted-gray);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 992px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CONTRIBUTIONS SECTION */
+    .contributions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+    }
+    .contribution-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 300px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .contribution-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.08), transparent 60%);
+      pointer-events: none;
+    }
+    .contribution-card:hover {
+      border-color: var(--glass-hover-border);
+      box-shadow: 0 20px 45px rgba(168, 85, 247, 0.16);
+      transform: translateY(-6px);
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .card-role {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      color: var(--primary);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .card-indicator {
+      width: 8px;
+      height: 8px;
+      background-color: var(--cyber-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--cyber-green);
+    }
+    .card-name {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      color: var(--white);
+    }
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--light-gray);
+      line-height: 1.6;
+      margin-bottom: 30px;
+      font-weight: 300;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .card-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      color: #E9D5FF;
+      padding: 6px 14px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    /* SECURE CONTACT ARCHITECTURE */
+    .contact-card {
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 24px;
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      max-width: 900px;
+      margin: 0 auto;
+      box-shadow: 0 35px 75px rgba(0, 0, 0, 0.9);
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.6), transparent);
+    }
+    .contact-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      letter-spacing: 4px;
+      color: var(--cyber-green);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+    .contact-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 4.2rem);
+      font-weight: 700;
+      letter-spacing: -2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .contact-p {
+      font-size: 1.2rem;
+      color: var(--light-gray);
+      line-height: 1.8;
+      max-width: 650px;
+      margin: 0 auto 50px auto;
+      font-weight: 300;
+    }
+    
+    .contact-channels {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+    }
+    .social-anchor {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      background-color: #0b0b0b;
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 20px;
+      color: var(--white);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .social-anchor svg {
+      width: 32px;
+      height: 32px;
+      fill: currentColor;
+      transition: transform 0.3s ease;
+    }
+    .social-anchor:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+      transform: translateY(-6px);
+      color: var(--primary);
+    }
+    .social-anchor:hover svg {
+      transform: scale(1.15);
+    }
+
+    /* FOOTER */
+    footer {
+      background: #040404;
+      border-top: 1px solid rgba(168, 85, 247, 0.12);
+      padding: 50px 0;
+      position: relative;
+      z-index: 10;
+    }
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer-logo span {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--muted-gray);
+      letter-spacing: 1px;
+    }
+    .footer-top-btn {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: 1px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.3s ease;
+    }
+    .footer-top-btn:hover {
+      color: var(--cyber-green);
+    }
+
+    @media (max-width: 768px) {
+      .footer-container {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    /* REFINED KEYFRAMES */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 18px var(--cyber-green); }
+    }
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(0.5deg); }
+    }
+    @keyframes blink {
+      0%, 49% { background-color: var(--cyber-green); }
+      50%, 100% { background-color: transparent; }
+    }
+    @keyframes terminal-line-reveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes marquee-infinite {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes glitch-split {
+      0%, 93%, 97%, 100% {
+        transform: skew(0deg);
+      }
+      94% {
+        transform: skew(3deg);
+        text-shadow: 3px 0 0 rgba(255,0,0,0.6), -3px 0 0 rgba(0,255,255,0.6);
+      }
+      95% {
+        transform: skew(-3deg);
+        text-shadow: -3px 0 0 rgba(255,0,0,0.6), 3px 0 0 rgba(0,255,255,0.6);
+      }
+      96% {
+        transform: skew(0deg);
+        text-shadow: 4px 0 0 rgba(255,0,0,0.6), -4px 0 0 rgba(0,255,255,0.6);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PARTICLE ENGINE CORE CANVAS -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- MOUSE TRACKING GLOW BACKLIGHT -->
+  <div class="mouse-glow" id="mouse-glow"></div>
+
+  <div class="app-container">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-logo" onclick="scrollToSection('hero')">
+        <span>BENJAMIN</span>
+        <div class="logo-dot"></div>
+      </div>
+      
+      <button class="nav-toggle" id="nav-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links" id="nav-links">
+        <a class="nav-link active" onclick="scrollToSection('hero')">OVERVIEW</a>
+        <a class="nav-link" onclick="scrollToSection('system-log')">SYSTEM LOG</a>
+        <a class="nav-link" onclick="scrollToSection('contributions')">CONTRIBUTIONS</a>
+        <a class="nav-link" onclick="scrollToSection('contact')">CONTACT</a>
+      </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="section-container hero-section" id="hero">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            <span class="hero-badge-text">Web3 Creative Operator</span>
+          </div>
+          <h1 class="hero-title">
+            <span>BENJAMIN</span>
+          </h1>
+          <p class="hero-tagline">
+            Contributing to the future of Web3 through community building, creative direction, visual storytelling, branding identity, and meaningful ecosystem engagement.
+          </p>
+          <div class="hero-actions">
+            <a onclick="scrollToSection('system-log')" class="btn btn-primary">VIEW JOURNEY</a>
+            <a onclick="scrollToSection('contact')" class="btn btn-secondary">CONTACT ME</a>
+          </div>
+        </div>
+        
+        <div class="hero-right">
+          <div class="portrait-wrapper" id="portrait-3d">
+            <div class="cyber-corner corner-tl"></div>
+            <div class="cyber-corner corner-tr"></div>
+            <div class="cyber-corner corner-bl"></div>
+            <div class="cyber-corner corner-br"></div>
+            <div class="portrait-container">
+              <img 
+                id="pfp-img"
+                src="https://raw.githubusercontent.com/BenjaminNXS/Pfp/main/pfp.jpg" 
+                alt="Benjamin Portrait" 
+                class="portrait-image"
+                onerror="handlePfpFallback()"
+              >
+              <div class="portrait-hud">SYS_ID // 1007326312...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HIGH END VIEWPORT-TRIGGERED STATS CONTAINER -->
+      <div class="stats-section">
+        <div class="stats-grid">
+          
+          <div class="stat-card">
+            <div class="stat-number" data-target="9">0</div>
+            <div class="stat-label">Web3 Contributions</div>
+            <div class="stat-subtext">Active Ecosystems</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-number" data-target="7">0</div>
+            <div class="stat-label">Community Engagement</div>
+            <div class="stat-subtext">Roles Verified</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-number" data-target="1.5" data-decimal="true">0</div>
+            <div class="stat-label">Continuous Web3 Building</div>
+            <div class="stat-subtext">Years Experience</div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SYSTEM LOG / TYPING TERMINAL SECTION -->
+    <section class="terminal-section" id="system-log">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-pretitle">Active Integration Pipeline</span>
+          <h2 class="section-title">SYSTEM CONSOLE</h2>
+        </div>
+
+        <!-- Terminal Window: Locked Stable Structural Sizing -->
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-buttons">
+              <span class="term-btn term-close"></span>
+              <span class="term-btn term-min"></span>
+              <span class="term-btn term-max"></span>
+            </div>
+            <div class="terminal-title">SYSTEM CONSOLE: V2.5.0-PRODUCTION</div>
+            <div class="terminal-clock" id="terminal-clock">UTC // 00:00:00</div>
+          </div>
+          <div class="terminal-body" id="terminal-body">
+            <!-- Programmatic Console Logs Stream In Safely Here -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HORIZONTAL LOOPING MARQUEE -->
+    <section class="marquee-container">
+      <div class="marquee-track">
+        <!-- Scroll Line 1 -->
+        <div class="marquee-item">
+          <span class="marquee-text">ZIPPY CHAIN</span><div class="marquee-dot"></div>
+          <span class="marquee-text">ENDLESS PROTOCOL</span><div class="marquee-dot"></div>
+          <span class="marquee-text">MANGO NETWORK</span><div class="marquee-dot"></div>
+          <span class="marquee-text">OPENVERSE</span><div class="marquee-dot"></div>
+          <span class="marquee-text">DEEPSAFE</span><div class="marquee-dot"></div>
+          <span class="marquee-text">GOAT NETWORK</span><div class="marquee-dot"></div>
+          <span class="marquee-text">NX FINANCE</span><div class="marquee-dot"></div>
+          <span class="marquee-text">AIX LEDGER</span><div class="marquee-dot"></div>
+        </div>
+        <!-- Continuous Loop Line Duplicate -->
+        <div class="marquee-item" aria-hidden="true">
+          <span class="marquee-text">ZIPPY CHAIN</span><div class="marquee-dot"></div>
+          <span class="marquee-text">ENDLESS PROTOCOL</span><div class="marquee-dot"></div>
+          <span class="marquee-text">MANGO NETWORK</span><div class="marquee-dot"></div>
+          <span class="marquee-text">OPENVERSE</span><div class="marquee-dot"></div>
+          <span class="marquee-text">DEEPSAFE</span><div class="marquee-dot"></div>
+          <span class="marquee-text">GOAT NETWORK</span><div class="marquee-dot"></div>
+          <span class="marquee-text">NX FINANCE</span><div class="marquee-dot"></div>
+          <span class="marquee-text">AIX LEDGER</span><div class="marquee-dot"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="section-container" id="about">
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="cyber-corner corner-tl"></div>
+          <div class="cyber-corner corner-br"></div>
+          <span class="section-pretitle">Web3 Alignment</span>
+          <p class="about-p">
+            Benjamin represents the vanguard of Web3 community builders, pairing technical network environments with high-fidelity visual layout.
+          </p>
+          <p class="about-p" style="font-size: 1.05rem; color: var(--muted-gray);">
+            As an artist, moderator, and creative designer, Benjamin turns raw code integrations into living digital brand movements.
+          </p>
+        </div>
+
+        <div class="profile-feature-grid">
+          <div class="feature-item">
+            <h4 class="feature-title">Artist & Visual Curator</h4>
+            <p class="feature-desc">Crafting beautiful asset packages, illustrative graphics, and interactive design guides for multi-chain platforms.</p>
+          </div>
+          <div class="feature-item">
+            <h4 class="feature-title">Active Moderator</h4>
+            <p class="feature-desc">Securing network community spaces from noise, maximizing interaction quality and onboarding events.</p>
+          </div>
+          <div class="feature-item">
+            <h4 class="feature-title">Creative Builder</h4>
+            <p class="feature-desc">Structuring unique ecosystem strategies that align early technology with organic cultural movements.</p>
+          </div>
+          <div class="feature-item">
+            <h4 class="feature-title">Branding Designer</h4>
+            <p class="feature-desc">Establishing consistent visual foundations that tell high-end modern cryptographic stories.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTRIBUTIONS SECTION -->
+    <section class="section-container" id="contributions">
+      <div class="section-header" style="text-align: center; margin-bottom: 70px;">
+        <span class="section-pretitle">Consensus Footprint</span>
+        <h2 class="section-title">RECOGNIZED CONTRIBUTIONS</h2>
+      </div>
+
+      <div class="contributions-grid" id="contributions-grid">
+        <!-- Programmatically Injected via Script -->
+      </div>
+    </section>
+
+    <!-- SECURE CONTACT SECTION -->
+    <section class="section-container" id="contact">
+      <div class="contact-card">
+        <div class="cyber-corner corner-tl"></div>
+        <div class="cyber-corner corner-tr"></div>
+        <div class="cyber-corner corner-bl"></div>
+        <div class="cyber-corner corner-br"></div>
+        
+        <span class="contact-subtitle">CHANNELS SECURED</span>
+        <h2 class="contact-title">INITIATE ALIGNMENT</h2>
+        <p class="contact-p">
+          Reach out on verified cryptographic and social hubs to discuss design systems, ecosystem direction, or active community scaling.
+        </p>
+
+        <!-- Only Interactive Dynamic Anchors (Strict No-Username policy) -->
+        <div class="contact-channels">
+          <a href="https://x.com/Ultraman_Malam" target="_blank" rel="noopener noreferrer" class="social-anchor" title="Twitter / X">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://discordapp.com/users/1007326312068808796" target="_blank" rel="noopener noreferrer" class="social-anchor" title="Discord">
+            <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.873-.894.077.077 0 0 1-.008-.128c.126-.093.252-.19.372-.287a.075.075 0 0 1 .077-.011c3.92 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.246.195.373.289a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.156 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.156-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.156 2.418z"/></svg>
+          </a>
+          <a href="https://t.me/GhostClown" target="_blank" rel="noopener noreferrer" class="social-anchor" title="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.37.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .24z"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-container">
+        <div class="footer-logo">
+          <span>BENJAMIN</span>
+          <div class="logo-dot"></div>
+        </div>
+        <span class="footer-copy">© 2026 BENJAMIN. ALL CONCEPTS REALIZED VIA CODE & ART.</span>
+        <button class="footer-top-btn" onclick="scrollToSection('hero')">RETURN TO APEX</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    /* ━━━━━━━━━━━━━━━━━━━━━━
+       ADVANCED BACKGROUND ECOSYSTEM ENGINE
+       3 INDEPENDENT ANIMATED LAYERS IN A SINGLE HIGH-PERFORMANCE CANVAS
+       ━━━━━━━━━━━━━━━━━━━━━━ */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    // Track mouse position and speed
+    const mouse = {
+      x: null,
+      y: null,
+      radius: 180,
+      active: false
+    };
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.active = true;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouse.active = false;
+    });
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initMesh(); // Reinitialize mesh grids on resize to prevent stretching
+    });
+
+    // --- LAYER 1: WEB3 DATA MESH (Subtle wave deformation, very low opacity) ---
+    const meshCols = 15;
+    const meshRows = 10;
+    let meshPoints = [];
+
+    function initMesh() {
+      meshPoints = [];
+      const colStep = width / (meshCols - 1);
+      const rowStep = height / (meshRows - 1);
+
+      for (let r = 0; r < meshRows; r++) {
+        for (let c = 0; c < meshCols; c++) {
+          meshPoints.push({
+            origX: c * colStep,
+            origY: r * rowStep,
+            x: c * colStep,
+            y: r * rowStep,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.005 + Math.random() * 0.008
+          });
+        }
+      }
+    }
+
+    function updateAndDrawMesh(time) {
+      // 1. Update positions with a slow organic sine wave
+      meshPoints.forEach(p => {
+        p.phase += p.speed;
+        // Natural 3D grid deformation
+        p.x = p.origX + Math.sin(p.phase + time * 0.0005) * 12;
+        p.y = p.origY + Math.cos(p.phase + time * 0.0005) * 12;
+      });
+
+      // 2. Render triangular network structure
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.015)';
+      ctx.lineWidth = 0.5;
+
+      for (let r = 0; r < meshRows - 1; r++) {
+        for (let c = 0; c < meshCols - 1; c++) {
+          const idx = r * meshCols + c;
+          const right = idx + 1;
+          const bottom = idx + meshCols;
+          const bottomRight = bottom + 1;
+
+          // Triangular primitive connections
+          ctx.beginPath();
+          ctx.moveTo(meshPoints[idx].x, meshPoints[idx].y);
+          ctx.lineTo(meshPoints[right].x, meshPoints[right].y);
+          ctx.lineTo(meshPoints[bottom].x, meshPoints[bottom].y);
+          ctx.closePath();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(meshPoints[right].x, meshPoints[right].y);
+          ctx.lineTo(meshPoints[bottomRight].x, meshPoints[bottomRight].y);
+          ctx.lineTo(meshPoints[bottom].x, meshPoints[bottom].y);
+          ctx.closePath();
+          ctx.stroke();
+        }
+      }
+    }
+
+    // --- LAYER 2: PARTICLE NETWORK (Neural connection system + mouse reaction) ---
+    const networkNodes = [];
+    const nodeCount = 55;
+
+    class NetworkNode {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.origX = this.x;
+        this.origY = this.y;
+        this.vx = (Math.random() - 0.5) * 0.2;
+        this.vy = (Math.random() - 0.5) * 0.2;
+        this.radius = Math.random() * 2 + 1;
+        this.glowIntensity = 0;
+      }
+
+      update() {
+        // Natural slow drifting movement
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Wrap around limits
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+
+        // Interactive mouse magnet repulsion and glow reaction
+        if (mouse.active) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < mouse.radius) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            // Push slowly away
+            this.x -= (dx / dist) * force * 1.5;
+            this.y -= (dy / dist) * force * 1.5;
+            this.glowIntensity = Math.min(this.glowIntensity + 0.05, 1);
+          } else {
+            this.glowIntensity = Math.max(this.glowIntensity - 0.02, 0);
+          }
+        } else {
+          this.glowIntensity = Math.max(this.glowIntensity - 0.02, 0);
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        
+        // Compute responsive network visual appearance
+        const r = Math.floor(168 + (87 * this.glowIntensity)); // Interpolate to cyber green
+        const g = Math.floor(85 + (144 * this.glowIntensity));
+        const b = Math.floor(247 - (79 * this.glowIntensity));
+
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.35 + this.glowIntensity * 0.55})`;
+        if (this.glowIntensity > 0) {
+          ctx.shadowBlur = 10 * this.glowIntensity;
+          ctx.shadowColor = 'rgba(0, 229, 168, 0.8)';
+        }
+        ctx.fill();
+        ctx.shadowBlur = 0; // Reset
+      }
+    }
+
+    function initNetwork() {
+      for (let i = 0; i < nodeCount; i++) {
+        networkNodes.push(new NetworkNode());
+      }
+    }
+
+    function updateAndDrawNetwork() {
+      // Update nodes
+      networkNodes.forEach(node => node.update());
+
+      // Create lines between close nodes (neural intelligence mesh)
+      ctx.lineWidth = 0.55;
+      for (let i = 0; i < networkNodes.length; i++) {
+        for (let j = i + 1; j < networkNodes.length; j++) {
+          const dx = networkNodes[i].x - networkNodes[j].x;
+          const dy = networkNodes[i].y - networkNodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 135) {
+            const opacity = (135 - dist) / 135 * 0.11;
+            // Calculate mixed connection line glow on user hover
+            const mixGlow = (networkNodes[i].glowIntensity + networkNodes[j].glowIntensity) / 2;
+            
+            if (mixGlow > 0.1) {
+              ctx.strokeStyle = `rgba(0, 229, 168, ${opacity * (1 + mixGlow * 2.5)})`;
+            } else {
+              ctx.strokeStyle = `rgba(168, 85, 247, ${opacity})`;
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(networkNodes[i].x, networkNodes[i].y);
+            ctx.lineTo(networkNodes[j].x, networkNodes[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw nodes
+      networkNodes.forEach(node => node.draw());
+    }
+
+    // --- LAYER 3: ATMOSPHERIC AMBIENT PARTICLES (Tiny drifting points with soft blur) ---
+    const ambientParticles = [];
+    const ambientCount = 45;
+
+    class AmbientParticle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedY = -(0.08 + Math.random() * 0.15); // Drift slowly upwards
+        this.speedX = (Math.random() - 0.5) * 0.06;
+        this.alpha = Math.random() * 0.35 + 0.15;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+
+        // Reset if off-canvas
+        if (this.y < -10 || this.x < -10 || this.x > width + 10) {
+          this.reset();
+          this.y = height + 10;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function initAmbient() {
+      for (let i = 0; i < ambientCount; i++) {
+        ambientParticles.push(new AmbientParticle());
+      }
+    }
+
+    function updateAndDrawAmbient() {
+      ambientParticles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+    }
+
+    // --- EXECUTE INTEL BACKBONE INITIALIZATION ---
+    initMesh();
+    initNetwork();
+    initAmbient();
+
+    // Master Ecosystem rendering sequence running at optimal refresh intervals
+    function renderEcosystem(time) {
+      // Keep canvas size synchronized
+      if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Render Layer 1: Web3 Data Mesh Grid (Slow speed multiplier)
+      updateAndDrawMesh(time);
+
+      // Render Layer 2: Particle Network (Medium responsive speed multiplier)
+      updateAndDrawNetwork();
+
+      // Render Layer 3: Atmospheric Particles (Slightly faster speed multiplier)
+      updateAndDrawAmbient();
+
+      requestAnimationFrame(renderEcosystem);
+    }
+    requestAnimationFrame(renderEcosystem);
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━
+       AMBIENT GLOWS & SYSTEM NAVIGATION CONTROLS
+       ━━━━━━━━━━━━━━━━━━━━━━ */
+    const mouseGlow = document.getElementById('mouse-glow');
+    window.addEventListener('mousemove', (e) => {
+      mouseGlow.style.left = `${e.clientX}px`;
+      mouseGlow.style.top = `${e.clientY}px`;
+    });
+
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    const navToggle = document.getElementById('nav-toggle');
+    const navLinks = document.getElementById('nav-links');
+    navToggle.addEventListener('click', () => {
+      navToggle.classList.toggle('open');
+      navLinks.classList.toggle('open');
+    });
+
+    function scrollToSection(id) {
+      const target = document.getElementById(id);
+      if (target) {
+        navToggle.classList.remove('open');
+        navLinks.classList.remove('open');
+        const offset = 90;
+        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    const sections = document.querySelectorAll('section');
+    const links = document.querySelectorAll('.nav-link');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        const top = sec.offsetTop - 130;
+        if (window.pageYOffset >= top) {
+          current = sec.getAttribute('id');
+        }
+      });
+      links.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('onclick').includes(current)) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━
+       PORTRAIT INTERACTIVE 3D PARALLAX TILT
+       ━━━━━━━━━━━━━━━━━━━━━━ */
+    const portrait3d = document.getElementById('portrait-3d');
+    if (portrait3d) {
+      portrait3d.addEventListener('mousemove', (e) => {
+        const rect = portrait3d.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const xc = rect.width / 2;
+        const yc = rect.height / 2;
+        const dx = (xc - x) / 11;
+        const dy = (yc - y) / 11;
+        portrait3d.style.transform = `perspective(1000px) rotateY(${-dx}deg) rotateX(${dy}deg) scale(1.02)`;
+      });
+      portrait3d.addEventListener('mouseleave', () => {
+        portrait3d.style.transform = `perspective(1000px) rotateY(0deg) rotateX(0deg) scale(1)`;
+      });
+    }
+
+    function handlePfpFallback() {
+      const fallbackUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80";
+      document.getElementById('pfp-img').src = fallbackUrl;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━
+       INTERACTION INTERSECTION OBSERVER FOR STATISTICS COUUNT UP
+       ━━━━━━━━━━━━━━━━━━━━━━ */
+    const statCards = document.querySelectorAll('.stat-number');
+    const statsObserverOptions = {
+      root: null,
+      threshold: 0.1
+    };
+
+    const statsObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = entry.target;
+          const targetValue = parseFloat(target.getAttribute('data-target'));
+          const isDecimal = target.getAttribute('data-decimal') === 'true';
+          animateValue(target, 0, targetValue, 2000, isDecimal);
+          observer.unobserve(target); // Run once
+        }
+      });
+    }, statsObserverOptions);
+
+    statCards.forEach(card => {
+      statsObserver.observe(card);
+    });
+
+    function animateValue(obj, start, end, duration, isDecimal) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        
+        // Easing out quadratic function
+        const easedProgress = progress * (2 - progress);
+        const currentValue = easedProgress * (end - start) + start;
+        
+        if (isDecimal) {
+          obj.innerHTML = currentValue.toFixed(1) + " <span style='color: var(--primary)'>YEARS</span>";
+        } else {
+          obj.innerHTML = Math.floor(currentValue) + "<span style='color: var(--primary)'>+</span>";
+        }
+
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━
+       STABLE TERMINAL CONTROLLER (BUG FIX HELD)
+       ━━━━━━━━━━━━━━━━━━━━━━ */
+    const terminalBody = document.getElementById('terminal-body');
+    const terminalClock = document.getElementById('terminal-clock');
+
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toISOString().replace('T', ' // ').substring(0, 22);
+      terminalClock.innerText = `UTC // ${timeStr}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const logData = [
+      { role: "OG Member", project: "Mango Network", status: "Active", class: "status-active" },
+      { role: "Artist", project: "Mango Network", status: "Active", class: "status-active" },
+      { role: "OG Member", project: "Zippy Chain", status: "Stable", class: "status-stable" },
+      { role: "Artist", project: "Zippy Chain", status: "Stable", class: "status-stable" },
+      { role: "Ambassador", project: "Endless Protocol", status: "Verified", class: "status-verified" },
+      { role: "Artist", project: "Endless Protocol", status: "Verified", class: "status-verified" },
+      { role: "Moderator", project: "Oshit.io", status: "Active", class: "status-active" },
+      { role: "Design Contributor", project: "Aix Ledger", status: "Verified", class: "status-verified" },
+      { role: "Product Contributor", project: "Aix Ledger", status: "Verified", class: "status-verified" },
+      { role: "Builder", project: "DeepSafe", status: "Stable", class: "status-stable" },
+      { role: "Artist", project: "DeepSafe", status: "Stable", class: "status-stable" },
+      { role: "OG Member", project: "Openverse", status: "Active", class: "status-active" },
+      { role: "Artist", project: "Openverse", status: "Active", class: "status-active" },
+      { role: "OG Member", project: "Goat Network", status: "Stable", class: "status-stable" },
+      { role: "Artist", project: "NX Finance", status: "Active", class: "status-active" }
+    ];
+
+    let logIndex = 0;
+    
+    function appendTerminalLine() {
+      if (logIndex >= logData.length) {
+        terminalBody.innerHTML = '<div class="term-row"><span class="term-prompt">&gt;</span> <span class="term-val">SYSTEM CYCLES REFRESHED... ONLINE.</span></div>';
+        logIndex = 0;
+      }
+
+      const item = logData[logIndex];
+      const row = document.createElement('div');
+      row.className = 'term-row';
+      row.innerHTML = `
+        <span class="term-prompt">&gt;</span>
+        <span class="term-label">[ ROLE ]</span>
+        <span class="term-val">${item.role}</span>
+        <span style="color: var(--gray-600)">→</span>
+        <span class="term-val" style="color: var(--cyber-green)">${item.project}</span>
+        <span class="term-status ${item.class}">${item.status}</span>
+      `;
+      
+      terminalBody.appendChild(row);
+      logIndex++;
+
+      // Autoscroll viewport stability control
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+
+    function bootTerminal() {
+      const bootMessages = [
+        "ESTABLISHING CRYPTOGRAPHIC TUNNELS...",
+        "DECRYPTING LOG_STREAM // BENJAMIN_PORTFOLIO...",
+        "SECURE SYNC: STABLE INTEGRATION ONLINE."
+      ];
+
+      bootMessages.forEach((msg, idx) => {
+        setTimeout(() => {
+          const row = document.createElement('div');
+          row.className = 'term-row';
+          row.innerHTML = `<span class="term-prompt">&gt;</span> <span class="term-val">${msg}</span>`;
+          terminalBody.appendChild(row);
+          terminalBody.scrollTop = terminalBody.scrollHeight;
+        }, idx * 600);
+      });
+
+      setTimeout(() => {
+        setInterval(appendTerminalLine, 1300);
+      }, bootMessages.length * 600);
+    }
+    bootTerminal();
+
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━
+       CONTRIBUTION CARDS PROGRAMMATIC GENERATION
+       ━━━━━━━━━━━━━━━━━━━━━━ */
+    const contributionData = [
+      { name: "MANGO NETWORK", role: "OG Member & Artist", desc: "Coordinating strategic creative layouts, key visual assets, and interactive art narratives for the Mango Layer-1 scaling ecosystem.", tags: ["Art direction", "Web3 Identity", "Community Design"] },
+      { name: "ZIPPY CHAIN", role: "OG Member & Artist", desc: "Shaping the aesthetic boundaries of the next-generation scaling network. Formulating high-fidelity visual concepts.", tags: ["Core Branding", "Vibe Curation", "Interactive Design"] },
+      { name: "ENDLESS PROTOCOL", role: "Ambassador & Artist", desc: "Evangelizing visual excellence and fostering localized community graphics for highly optimized endless ledger concepts.", tags: ["Ambassador", "Motion Graphics", "3D Ideation"] },
+      { name: "OSHIT.IO", role: "Moderator", desc: "Leading advanced community moderation dynamics, ensuring interactive and healthy environment workflows on web3 channels.", tags: ["Moderator", "Conflict Resolution", "Events"] },
+      { name: "AIX LEDGER", role: "Design & Product Contributor", desc: "Bridging the visual language gap between enterprise security ledger elements and stunning customer-ready modern dark UI.", tags: ["Product Flow", "UI Archetype", "Design System"] },
+      { name: "DEEPSAFE", role: "Builder & Artist", desc: "Fusing deep-layer security frameworks with cybermatic interface designs, making security feel visual, reliable, and cinematic.", tags: ["Security Art", "Interface Builder", "Prototyping"] },
+      { name: "OPENVERSE", role: "OG Member & Artist", desc: "Directing collaborative open-metaverse branding frameworks and high-fidelity experimental 3D assets.", tags: ["3D Assets", "Metaverse Strategy", "NFT Concept"] },
+      { name: "GOAT NETWORK", role: "OG Member", desc: "Contributing to premium Web3 culture systems and active engagement architectures to bring decentralized goats to high heights.", tags: ["Culture Curation", "Social Dynamics", "Ideation"] },
+      { name: "NX FINANCE", role: "Artist", desc: "Creating unique illustrative assets, high-conversion visual marketing collateral, and conceptual financial interface guidelines.", tags: ["Marketing Art", "Visual Assets", "Illustrations"] }
+    ];
+
+    const cardsGrid = document.getElementById('contributions-grid');
+    contributionData.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'contribution-card';
+      card.innerHTML = `
+        <div class="card-meta">
+          <span class="card-role">${item.role}</span>
+          <span class="card-indicator"></span>
+        </div>
+        <div>
+          <h4 class="card-name">${item.name}</h4>
+          <p class="card-desc">${item.desc}</p>
+        </div>
+        <div class="card-tags">
+          ${item.tags.map(t => `<span class="card-tag">${t}</span>`).join('')}
+        </div>
+      `;
+      cardsGrid.appendChild(card);
+    });
+
+  </script>
+</body>
+</html>
